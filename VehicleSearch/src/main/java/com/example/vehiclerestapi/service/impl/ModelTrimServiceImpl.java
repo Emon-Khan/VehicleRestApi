@@ -9,7 +9,6 @@ import com.example.vehiclerestapi.entity.TrimType;
 import com.example.vehiclerestapi.exception.ManufacturerNotFoundException;
 import com.example.vehiclerestapi.exception.ModelNotFoundException;
 import com.example.vehiclerestapi.exception.TrimTypeNotFoundException;
-import com.example.vehiclerestapi.service.ManufacturerService;
 import com.example.vehiclerestapi.service.ModelTrimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,6 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     private TrimTypeDAO trimTypeDAO;
     @Autowired
     private ManufacturerDAO manufacturerDAO;
-    @Autowired
-    private ManufacturerService manufacturerService;
 
     @Override
     public Model saveModel(Model model) {
@@ -51,7 +48,7 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     @Override
     public Model getModelById(int id) throws ModelNotFoundException {
         Model checkModelId = modelDAO.findById(id).orElseThrow(
-                () -> new ModelNotFoundException("No Model found in DB with ID- " + id));
+                () -> new ModelNotFoundException("Model has not been found for this ID " + id));
         return checkModelId;
     }
 
@@ -98,7 +95,7 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     public List<Model> getModelsByManufacturerId(int manufacturerId) throws ManufacturerNotFoundException {
         Optional<Manufacturer> manufacturerFromDB = manufacturerDAO.findById(manufacturerId);
         if (manufacturerFromDB.isEmpty()) {
-            throw new ManufacturerNotFoundException("Manufacturer has not found for the ID " + manufacturerId);
+            throw new ManufacturerNotFoundException("Manufacturer has not been found for this ID " + manufacturerId);
         }
         Manufacturer detailsOfManufacturer = manufacturerFromDB.get();
         List<Model> modelList = modelDAO.findByManufacturer(detailsOfManufacturer);
@@ -127,7 +124,7 @@ public class ModelTrimServiceImpl implements ModelTrimService {
             }
         }
         Manufacturer detailsOfManufacturer = manufacturerDAO.findById(manufacturerDetails.getId()).orElseThrow(
-                ()->new ManufacturerNotFoundException("Manufacturer has not been found for this ID " + manufacturerDetails.getId()));
+                () -> new ManufacturerNotFoundException("Manufacturer has not been found for this ID " + manufacturerDetails.getId()));
         if (!manufacturerDetails.equals(modelDetails.getManufacturer())) {
             modelDetails.setManufacturer(manufacturerDetails);
         }

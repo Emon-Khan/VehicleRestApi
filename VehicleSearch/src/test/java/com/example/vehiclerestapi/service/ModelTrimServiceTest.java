@@ -9,7 +9,6 @@ import com.example.vehiclerestapi.entity.TrimType;
 import com.example.vehiclerestapi.exception.ManufacturerNotFoundException;
 import com.example.vehiclerestapi.exception.ModelNotFoundException;
 import com.example.vehiclerestapi.exception.TrimTypeNotFoundException;
-import com.example.vehiclerestapi.service.impl.ManufacturerServiceImpl;
 import com.example.vehiclerestapi.service.impl.ModelTrimServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,25 +24,24 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 public class ModelTrimServiceTest {
     Model model;
     TrimType trimType;
-    Manufacturer manufacturer;
     @Mock
     private TrimTypeDAO trimTypeDAO;
     @Mock
     private ModelDAO modelDAO;
-
     @Mock
     private ManufacturerDAO manufacturerDAO;
 
     @InjectMocks
     private ModelTrimServiceImpl modelTrimService;
-    @InjectMocks
-    private ManufacturerServiceImpl manufacturerService;
 
     @BeforeEach
     public void init() {
@@ -60,7 +58,7 @@ public class ModelTrimServiceTest {
     public void ModelTrimService_saveModel_ReturnModelIsNotNull() {
         //Arrange
         //It has been defined within the init
-        Mockito.when(modelDAO.save(Mockito.any(Model.class))).thenReturn(model);
+        Mockito.when(modelDAO.save(any(Model.class))).thenReturn(model);
 
         //Act
         Model savedModel = modelTrimService.saveModel(model);
@@ -73,7 +71,7 @@ public class ModelTrimServiceTest {
     public void ModelTrimService_saveTrimType_ReturnTrimTypeIsNotNull() {
         //Arrange
         trimType = new TrimType(1, "SEL");
-        Mockito.when(trimTypeDAO.save(Mockito.any(TrimType.class))).thenReturn(trimType);
+        Mockito.when(trimTypeDAO.save(any(TrimType.class))).thenReturn(trimType);
 
         //Act
         TrimType savedTrimType = modelTrimService.saveTrimType(trimType);
@@ -119,7 +117,22 @@ public class ModelTrimServiceTest {
     }
 
     @Test
-    public void ModelTrimService_getTrimById_ReturnModelIsNotNull() throws ModelNotFoundException, TrimTypeNotFoundException {
+    public void ModelTrimService_getModelById_WillThrowModelNotFound() {
+        //Given
+        int id = 10;
+        given(modelDAO.findById(id))
+                .willReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(()->
+                modelTrimService.getModelById(id))
+                .isInstanceOf(ModelNotFoundException.class)
+                .hasMessageContaining("Model has not been found for this ID " + id);
+    }
+
+    @Test
+    public void ModelTrimService_getTrimById_ReturnModelIsNotNull() throws TrimTypeNotFoundException {
         //Arrange
         trimType = new TrimType(1, "SEL");
         Mockito.when(trimTypeDAO.findById(trimType.getId())).thenReturn(Optional.ofNullable(trimType));
@@ -129,6 +142,20 @@ public class ModelTrimServiceTest {
 
         //Assert
         assertThat(findTrimType).isNotNull();
+    }
+    @Test
+    public void ModelTrimService_getTrimById_WillThrowTrimTypeNotFound() {
+        //Given
+        int id = 10;
+        given(trimTypeDAO.findById(id))
+                .willReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(()->
+                modelTrimService.getTrimTypeById(id))
+                .isInstanceOf(TrimTypeNotFoundException.class)
+                .hasMessageContaining("Trim type has not been found for this ID " + id);
     }
 
     @Test
@@ -146,13 +173,27 @@ public class ModelTrimServiceTest {
                 2, "Polo", listOfTrimType, new Manufacturer(
                 1, "Volswagen CC", "China"));
         Mockito.when(modelDAO.findById(model.getId())).thenReturn(Optional.ofNullable(model));
-        Mockito.when(modelDAO.save(Mockito.any(Model.class))).thenReturn(model);
+        Mockito.when(modelDAO.save(any(Model.class))).thenReturn(model);
 
         //Act
         Model modifyModel = modelTrimService.modifyModel(model.getId(), model1);
 
         //Assert
         assertThat(modifyModel).isNotNull();
+    }
+    @Test
+    public void ModelTrimService_modifyModel_WillThrowModelNotFound() {
+        //Given
+        int id = 10;
+        given(modelDAO.findById(id))
+                .willReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(()->
+                modelTrimService.modifyModel(id,any()))
+                .isInstanceOf(ModelNotFoundException.class)
+                .hasMessageContaining("Model has not been found for this ID " + id);
     }
 
     @Test
@@ -162,13 +203,27 @@ public class ModelTrimServiceTest {
         trimType = new TrimType(1, "SEL");
         TrimType trimType1 = new TrimType(2, "SEL-R-Line");
         Mockito.when(trimTypeDAO.findById(trimType.getId())).thenReturn(Optional.ofNullable(trimType));
-        Mockito.when(trimTypeDAO.save(Mockito.any(TrimType.class))).thenReturn(trimType);
+        Mockito.when(trimTypeDAO.save(any(TrimType.class))).thenReturn(trimType);
 
         //Act
         TrimType modifyTrimType = modelTrimService.modifyTrimType(trimType.getId(), trimType1);
 
         //Assert
         assertThat(modifyTrimType).isNotNull();
+    }
+    @Test
+    public void ModelTrimService_modifyTrimType_WillThrowTrimTypeNotFound() {
+        //Given
+        int id = 10;
+        given(trimTypeDAO.findById(id))
+                .willReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(()->
+                modelTrimService.modifyTrimType(id,any()))
+                .isInstanceOf(TrimTypeNotFoundException.class)
+                .hasMessageContaining("TrimType has not been found for this ID " + id);
     }
 
     @Test
@@ -181,6 +236,20 @@ public class ModelTrimServiceTest {
         //Assert
         assertAll(() -> modelTrimService.deleteModelById(model.getId()));
     }
+    /*@Test
+    public void ModelTrimService_deleteModelByID_WillThrowModelNotFound() throws ModelNotFoundException {
+        //Given
+        int id = 10;
+        given(modelTrimService.getModelById(id))
+                .willReturn(Optional.ofNullable());
+
+        //when
+        //then
+        assertThatThrownBy(()->
+                modelTrimService.deleteModelById(id))
+                .isInstanceOf(ModelNotFoundException.class)
+                .hasMessageContaining("Model has not been found for this ID " + id);
+    }*/
 
     @Test
     public void ModelTrimService_getModelsByManufacturerId_ReturnModelIsNotNullandSizeOfModel() throws ManufacturerNotFoundException {
@@ -204,6 +273,20 @@ public class ModelTrimServiceTest {
         //Assert
         assertThat(modelFindByManufacturerID).isNotNull();
         assertThat(modelFindByManufacturerID.size()).isEqualTo(2);
+    }
+    @Test
+    public void ModelTrimService_getModelsByManufacturerId_WillThrowManufacturerNotFound() {
+        //Given
+        int id = 10;
+        given(manufacturerDAO.findById(id))
+                .willReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(()->
+                modelTrimService.getModelsByManufacturerId(id))
+                .isInstanceOf(ManufacturerNotFoundException.class)
+                .hasMessageContaining("Manufacturer has not been found for this ID " + id);
     }
 
     /*@Test
