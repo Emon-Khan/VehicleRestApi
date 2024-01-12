@@ -1,5 +1,6 @@
 package com.example.vehiclerestapi.service;
 
+import com.example.vehiclerestapi.entity.Manufacturer;
 import com.example.vehiclerestapi.entity.Model;
 import com.example.vehiclerestapi.entity.TrimType;
 import com.example.vehiclerestapi.exception.ManufacturerNotFoundException;
@@ -16,6 +17,7 @@ public interface ModelTrimService {
     List<Model> getAllModels();
     Model getModelById(int id) throws ModelNotFoundException;
     TrimType getTrimTypeById(int id) throws TrimTypeNotFoundException;
+    public Manufacturer getManufacturerById(int id) throws ManufacturerNotFoundException;
 
     Model modifyModel(int id, Model model) throws ModelNotFoundException;
 

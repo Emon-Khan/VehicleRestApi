@@ -33,6 +33,7 @@ import static org.mockito.BDDMockito.given;
 public class ModelTrimServiceTest {
     Model model;
     TrimType trimType;
+    Manufacturer manufacturer;
     @Mock
     private TrimTypeDAO trimTypeDAO;
     @Mock
@@ -155,7 +156,33 @@ public class ModelTrimServiceTest {
         assertThatThrownBy(()->
                 modelTrimService.getTrimTypeById(id))
                 .isInstanceOf(TrimTypeNotFoundException.class)
-                .hasMessageContaining("Trim type has not been found for this ID " + id);
+                .hasMessageContaining("TrimType has not been found for this ID " + id);
+    }
+    @Test
+    public void ModelTrimService_getManufactuerById_ReturnManufactuerIsNotNull() throws ManufacturerNotFoundException {
+        //Arrange
+        manufacturer= new Manufacturer(1, "Volswagen CC", "China");
+        Mockito.when(manufacturerDAO.findById(manufacturer.getId())).thenReturn(Optional.ofNullable(manufacturer));
+
+        //Act
+        Manufacturer findManufacturer = modelTrimService.getManufacturerById(manufacturer.getId());
+
+        //Assert
+        assertThat(findManufacturer).isNotNull();
+    }
+    @Test
+    public void ModelTrimService_getManufacturerById_WillThrowManufacturerNotFound() {
+        //Given
+        int id = 10;
+        given(manufacturerDAO.findById(id))
+                .willReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(()->
+                modelTrimService.getManufacturerById(id))
+                .isInstanceOf(ManufacturerNotFoundException.class)
+                .hasMessageContaining("Manufacturer has not been found for this ID " + id);
     }
 
     @Test
@@ -181,20 +208,6 @@ public class ModelTrimServiceTest {
         //Assert
         assertThat(modifyModel).isNotNull();
     }
-    @Test
-    public void ModelTrimService_modifyModel_WillThrowModelNotFound() {
-        //Given
-        int id = 10;
-        given(modelDAO.findById(id))
-                .willReturn(Optional.empty());
-
-        //when
-        //then
-        assertThatThrownBy(()->
-                modelTrimService.modifyModel(id,any()))
-                .isInstanceOf(ModelNotFoundException.class)
-                .hasMessageContaining("Model has not been found for this ID " + id);
-    }
 
     @Test
     @DisplayName("This service will only change the value of modelName")
@@ -211,20 +224,6 @@ public class ModelTrimServiceTest {
         //Assert
         assertThat(modifyTrimType).isNotNull();
     }
-    @Test
-    public void ModelTrimService_modifyTrimType_WillThrowTrimTypeNotFound() {
-        //Given
-        int id = 10;
-        given(trimTypeDAO.findById(id))
-                .willReturn(Optional.empty());
-
-        //when
-        //then
-        assertThatThrownBy(()->
-                modelTrimService.modifyTrimType(id,any()))
-                .isInstanceOf(TrimTypeNotFoundException.class)
-                .hasMessageContaining("TrimType has not been found for this ID " + id);
-    }
 
     @Test
     public void ModelTrimService_deleteModelByID_ReturnModelIsNull() {
@@ -236,20 +235,6 @@ public class ModelTrimServiceTest {
         //Assert
         assertAll(() -> modelTrimService.deleteModelById(model.getId()));
     }
-    /*@Test
-    public void ModelTrimService_deleteModelByID_WillThrowModelNotFound() throws ModelNotFoundException {
-        //Given
-        int id = 10;
-        given(modelTrimService.getModelById(id))
-                .willReturn(Optional.ofNullable());
-
-        //when
-        //then
-        assertThatThrownBy(()->
-                modelTrimService.deleteModelById(id))
-                .isInstanceOf(ModelNotFoundException.class)
-                .hasMessageContaining("Model has not been found for this ID " + id);
-    }*/
 
     @Test
     public void ModelTrimService_getModelsByManufacturerId_ReturnModelIsNotNullandSizeOfModel() throws ManufacturerNotFoundException {
@@ -273,20 +258,6 @@ public class ModelTrimServiceTest {
         //Assert
         assertThat(modelFindByManufacturerID).isNotNull();
         assertThat(modelFindByManufacturerID.size()).isEqualTo(2);
-    }
-    @Test
-    public void ModelTrimService_getModelsByManufacturerId_WillThrowManufacturerNotFound() {
-        //Given
-        int id = 10;
-        given(manufacturerDAO.findById(id))
-                .willReturn(Optional.empty());
-
-        //when
-        //then
-        assertThatThrownBy(()->
-                modelTrimService.getModelsByManufacturerId(id))
-                .isInstanceOf(ManufacturerNotFoundException.class)
-                .hasMessageContaining("Manufacturer has not been found for this ID " + id);
     }
 
     /*@Test
