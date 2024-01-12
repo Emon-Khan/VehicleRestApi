@@ -9,7 +9,6 @@ import com.example.vehiclerestapi.entity.TrimType;
 import com.example.vehiclerestapi.exception.ManufacturerNotFoundException;
 import com.example.vehiclerestapi.exception.ModelNotFoundException;
 import com.example.vehiclerestapi.exception.TrimTypeNotFoundException;
-import com.example.vehiclerestapi.service.ManufacturerService;
 import com.example.vehiclerestapi.service.ModelTrimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,6 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     private TrimTypeDAO trimTypeDAO;
     @Autowired
     private ManufacturerDAO manufacturerDAO;
-    @Autowired
-    private ManufacturerService manufacturerService;
 
     @Override
     public Model saveModel(Model model) {
@@ -49,23 +46,34 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     }
 
     @Override
-    public Model getModelById(int id) throws ModelNotFoundException {
-        Model checkModelId = modelDAO.findById(id).orElseThrow(
-                () -> new ModelNotFoundException("No Model found in DB with ID- " + id));
-        return checkModelId;
+    public Optional<Model> getModelById(int id) throws ModelNotFoundException {
+        Optional<Model> optionalModel = modelDAO.findById(id);
+        if(optionalModel.isPresent()){
+            return optionalModel;
+        }else{
+            throw new ModelNotFoundException("Model has not been found for this ID " + id);
+        }
+        /*return optionalModel.map(obj -> optionalModel).orElseThrow(
+                () -> new ModelNotFoundException("Model has not been found for this ID " + id));*/
     }
 
     @Override
     public TrimType getTrimTypeById(int id) throws TrimTypeNotFoundException {
         TrimType checkTrimTypeId = trimTypeDAO.findById(id).orElseThrow(
-                () -> new TrimTypeNotFoundException("Trim type has not been found for this ID " + id));
+                () -> new TrimTypeNotFoundException("TrimType has not been found for this ID " + id));
         return checkTrimTypeId;
     }
 
     @Override
+    public Manufacturer getManufacturerById(int id) throws ManufacturerNotFoundException {
+        Manufacturer checkManufacturerId = manufacturerDAO.findById(id).orElseThrow(
+                () -> new ManufacturerNotFoundException("Manufacturer has not been found for this ID " + id));
+        return checkManufacturerId;
+    }
+
+    @Override
     public Model modifyModel(int id, Model model) throws ModelNotFoundException {
-        Model detailsOfModel = modelDAO.findById(id).orElseThrow(
-                () -> new ModelNotFoundException("Model has not been found for this ID " + id));
+        Model detailsOfModel = getModelById(id).get();
         if (Objects.nonNull(model)) {
             if (Objects.nonNull(model.getModelName()) && !"".equalsIgnoreCase(model.getModelName())) {
                 detailsOfModel.setModelName(model.getModelName());
@@ -77,8 +85,7 @@ public class ModelTrimServiceImpl implements ModelTrimService {
 
     @Override
     public TrimType modifyTrimType(int id, TrimType trimType) throws TrimTypeNotFoundException {
-        TrimType detailsOfTrimType = trimTypeDAO.findById(id).orElseThrow(
-                () -> new TrimTypeNotFoundException("TrimType has not been found for this ID " + id));
+        TrimType detailsOfTrimType = getTrimTypeById(id);
         if (Objects.nonNull(trimType)) {
             if (Objects.nonNull(trimType.getTrimType()) && !"".equalsIgnoreCase(trimType.getTrimType())) {
                 detailsOfTrimType.setTrimType(trimType.getTrimType());
@@ -90,25 +97,21 @@ public class ModelTrimServiceImpl implements ModelTrimService {
 
     @Override
     public void deleteModelById(int id) throws ModelNotFoundException {
-        Model modelID = getModelById(id);
+        Model modelDetails = getModelById(id).get();
         modelDAO.deleteById(id);
     }
 
     @Override
     public List<Model> getModelsByManufacturerId(int manufacturerId) throws ManufacturerNotFoundException {
-        Optional<Manufacturer> manufacturerFromDB = manufacturerDAO.findById(manufacturerId);
-        if (manufacturerFromDB.isEmpty()) {
-            throw new ManufacturerNotFoundException("Manufacturer has not found for the ID " + manufacturerId);
-        }
-        Manufacturer detailsOfManufacturer = manufacturerFromDB.get();
-        List<Model> modelList = modelDAO.findByManufacturer(detailsOfManufacturer);
+        Manufacturer manufacturerDetails = getManufacturerById(manufacturerId);
+        List<Model> modelList = modelDAO.findByManufacturer(manufacturerDetails);
         return modelList;
     }
 
     @Override
     public Model updateModelTrim(int modelId, Model model)
             throws ModelNotFoundException, TrimTypeNotFoundException, ManufacturerNotFoundException {
-        Model modelDetails = getModelById(modelId);
+        Model modelDetails = getModelById(modelId).get();
         List<TrimType> trimTypeDetailsList = model.getTrimTypeList();
         Manufacturer manufacturerDetails = model.getManufacturer();
         if ((!"".equalsIgnoreCase(model.getModelName())) &&
@@ -126,9 +129,9 @@ public class ModelTrimServiceImpl implements ModelTrimService {
                 modelDetails.getTrimTypeList().remove(i);
             }
         }
-        Manufacturer detailsOfManufacturer = manufacturerDAO.findById(manufacturerDetails.getId()).orElseThrow(
-                ()->new ManufacturerNotFoundException("Manufacturer has not been found for this ID " + manufacturerDetails.getId()));
-        if (!manufacturerDetails.equals(modelDetails.getManufacturer())) {
+
+        Manufacturer detailsOfManufacturer = getManufacturerById(manufacturerDetails.getId());
+        if (!manufacturerDetails.equals(detailsOfManufacturer)) {
             modelDetails.setManufacturer(manufacturerDetails);
         }
         modelDetails = modelDAO.save(modelDetails);

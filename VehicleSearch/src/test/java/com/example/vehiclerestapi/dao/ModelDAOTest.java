@@ -56,8 +56,8 @@ public class ModelDAOTest extends BaseTest {
                 new TrimType(4, "GTI"));
         //Manufacturer manufacturer = new Manufacturer(1, "Volswagen CC", "China");
         Model model1 = new Model(2, "Polo", listOfTrimType, manufacturer);
-        modelDAO.save(model);
-        modelDAO.save(model1);
+        //modelDAO.save(model);
+        //modelDAO.save(model1);
         //Act
         List<Model> listOfModel = modelDAO.findAll();
 
@@ -88,8 +88,8 @@ public class ModelDAOTest extends BaseTest {
                 new TrimType(4, "GTI"));
         //Manufacturer manufacturer = new Manufacturer(1, "Volswagen CC", "China");
         Model model1 = new Model(2, "Polo", listOfTrimType, manufacturer);
-        modelDAO.save(model);
-        modelDAO.save(model1);
+        //modelDAO.save(model);
+        //modelDAO.save(model1);
 
         //Act
         List<Model> ListOfModelUsingManufacturer = modelDAO.findByManufacturer(manufacturer);
