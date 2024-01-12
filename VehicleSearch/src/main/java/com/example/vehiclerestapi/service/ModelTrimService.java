@@ -8,6 +8,7 @@ import com.example.vehiclerestapi.exception.ModelNotFoundException;
 import com.example.vehiclerestapi.exception.TrimTypeNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ModelTrimService {
     Model saveModel(Model model);
@@ -15,7 +16,7 @@ public interface ModelTrimService {
     TrimType saveTrimType(TrimType trimType);
 
     List<Model> getAllModels();
-    Model getModelById(int id) throws ModelNotFoundException;
+    Optional<Model> getModelById(int id) throws ModelNotFoundException;
     TrimType getTrimTypeById(int id) throws TrimTypeNotFoundException;
     public Manufacturer getManufacturerById(int id) throws ManufacturerNotFoundException;
 

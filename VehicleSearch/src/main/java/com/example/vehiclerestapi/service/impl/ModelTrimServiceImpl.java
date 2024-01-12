@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -45,10 +46,15 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     }
 
     @Override
-    public Model getModelById(int id) throws ModelNotFoundException {
-        Model checkModelId = modelDAO.findById(id).orElseThrow(
-                () -> new ModelNotFoundException("Model has not been found for this ID " + id));
-        return checkModelId;
+    public Optional<Model> getModelById(int id) throws ModelNotFoundException {
+        Optional<Model> optionalModel = modelDAO.findById(id);
+        if(optionalModel.isPresent()){
+            return optionalModel;
+        }else{
+            throw new ModelNotFoundException("Model has not been found for this ID " + id);
+        }
+        /*return optionalModel.map(obj -> optionalModel).orElseThrow(
+                () -> new ModelNotFoundException("Model has not been found for this ID " + id));*/
     }
 
     @Override
@@ -57,6 +63,7 @@ public class ModelTrimServiceImpl implements ModelTrimService {
                 () -> new TrimTypeNotFoundException("TrimType has not been found for this ID " + id));
         return checkTrimTypeId;
     }
+
     @Override
     public Manufacturer getManufacturerById(int id) throws ManufacturerNotFoundException {
         Manufacturer checkManufacturerId = manufacturerDAO.findById(id).orElseThrow(
@@ -66,7 +73,7 @@ public class ModelTrimServiceImpl implements ModelTrimService {
 
     @Override
     public Model modifyModel(int id, Model model) throws ModelNotFoundException {
-        Model detailsOfModel = getModelById(id);
+        Model detailsOfModel = getModelById(id).get();
         if (Objects.nonNull(model)) {
             if (Objects.nonNull(model.getModelName()) && !"".equalsIgnoreCase(model.getModelName())) {
                 detailsOfModel.setModelName(model.getModelName());
@@ -90,7 +97,7 @@ public class ModelTrimServiceImpl implements ModelTrimService {
 
     @Override
     public void deleteModelById(int id) throws ModelNotFoundException {
-        Model modelDetails = getModelById(id);
+        Model modelDetails = getModelById(id).get();
         modelDAO.deleteById(id);
     }
 
@@ -104,7 +111,7 @@ public class ModelTrimServiceImpl implements ModelTrimService {
     @Override
     public Model updateModelTrim(int modelId, Model model)
             throws ModelNotFoundException, TrimTypeNotFoundException, ManufacturerNotFoundException {
-        Model modelDetails = getModelById(modelId);
+        Model modelDetails = getModelById(modelId).get();
         List<TrimType> trimTypeDetailsList = model.getTrimTypeList();
         Manufacturer manufacturerDetails = model.getManufacturer();
         if ((!"".equalsIgnoreCase(model.getModelName())) &&

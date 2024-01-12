@@ -1,5 +1,7 @@
 package com.example.vehiclerestapi.dao;
 
+import com.example.vehiclerestapi.BaseTest;
+import com.example.vehiclerestapi.VehicleDetailsApplication;
 import com.example.vehiclerestapi.entity.VehicleDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -8,14 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-public class VehicleDetailsDAOTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ContextConfiguration(classes = VehicleDetailsApplication.class)
+public class VehicleDetailsDAOTest extends BaseTest {
     VehicleDetails vehicleDetails;
     @Autowired
     private VehicleDetailsDAO vehicleDetailsDAO;
