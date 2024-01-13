@@ -8,12 +8,12 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     name: VehicleRestAPI
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
-#    properties:
-#      hibernate:
-#        dialect: org.hibernate.dialect.MySQLDialect
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
   config:
     import: optional:configserver:http://localhost:9194
 
