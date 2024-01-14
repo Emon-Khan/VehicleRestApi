@@ -1,8 +1,8 @@
-#server:
-#  port: 9192
+server:
+  port: 9190
 spring:
-#  application:
-  #    name: VEHICLERESTAPI
+  application:
+      name: VEHICLERESTAPI
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     username: ${DB_USERNAME}
