@@ -1,24 +1,14 @@
 package com.example.vehiclerestapi.service;
 
 import com.example.vehiclerestapi.dao.VehicleMarketPriceDAO;
-import com.example.vehiclerestapi.dto.ClientVehicleDetail;
 import com.example.vehiclerestapi.dto.VehicleDetails;
 import com.example.vehiclerestapi.dto.VehicleDetailsDTO;
-import com.example.vehiclerestapi.entity.VehicleMarketPrice;
 import com.example.vehiclerestapi.service.impl.VehicleDetailServiceImpl;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class VehicleDetailServiceTest {

@@ -15,3 +15,60 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   config:
     import: optional:configserver:http://localhost:9194
+
+management:
+  health:
+    circuit-breakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      getAllClientVehicleDetailsBreaker:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 6s
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        sliding-window-type: count_based
+      searchVehicleByFilterCriteriaBreaker:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 6s
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        sliding-window-type: count_based
+  retry:
+    instances:
+      getAllClientVehicleDetails:
+        max-attempts: 3
+        wait-duration: 3s
+      searchVehicleByFilterCriteria:
+        max-attempts: 3
+        wait-duration: 3s
+  rate-limiter:
+    instances:
+      getAllClientVehicleDetailsRateLimiter:
+        limit-refresh-period: 4s
+        timeout-duration: 0s
+        limit-for-period: 2
+      searchVehicleByFilterCriteriaRateLimiter:
+        limit-refresh-period: 4s
+        timeout-duration: 0s
+        limit-for-period: 2
+
+
+
