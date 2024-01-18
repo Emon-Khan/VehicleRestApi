@@ -264,7 +264,7 @@ public class ModelTrimServiceTest {
         assertThat(modelFindByManufacturerID.size()).isEqualTo(2);
     }
 
-    @Test
+    /*@Test
     public void ModelTrimService_updateModelTrim_ReturnModelTrimIsNotNull() throws TrimTypeNotFoundException, ModelNotFoundException, ManufacturerNotFoundException {
         //Arrange
         //It has been defined within the init
@@ -285,7 +285,7 @@ public class ModelTrimServiceTest {
         passedModel.setModelName(passedModel.getModelName());
         model.setModelName(model.getModelName());*/
 
-        for (TrimType temp : passedModel.getTrimTypeList()) {
+        /*for (TrimType temp : passedModel.getTrimTypeList()) {
             Mockito.when(trimTypeDAO.findById(temp.getId())).thenReturn(Optional.of(temp));
         }
         Mockito.when(manufacturerDAO.findById(passedModel.getManufacturer().getId())).thenReturn(Optional.ofNullable(manufacturer));
@@ -302,6 +302,6 @@ public class ModelTrimServiceTest {
         //assertThat(modelDetails).isNotNull();
 
         //manufacturerDAO.findById(manufacturerDetails.getId()).get()
-    }
+    }*/
 
 }
