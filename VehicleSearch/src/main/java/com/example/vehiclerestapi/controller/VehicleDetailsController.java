@@ -38,7 +38,7 @@ public class VehicleDetailsController {
     }
 
     @GetMapping("/{vehicleId}")
-    //I don't need CircuitBreaker here because when it doesn't find anything according to your
+    //I don't need CircuitBreaker here because when it doesn't find anything according to my
     // given id then it will give us the vehicle not found exception
     @PreAuthorize("hasAnyAuthority('admin:read', 'user:read')")
     public ResponseEntity<VehicleDetails> getVehicleById(@PathVariable int vehicleId) throws VehicleDetailsNotFound {

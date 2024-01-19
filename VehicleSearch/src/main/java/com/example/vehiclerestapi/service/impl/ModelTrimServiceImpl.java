@@ -53,8 +53,6 @@ public class ModelTrimServiceImpl implements ModelTrimService {
         }else{
             throw new ModelNotFoundException("Model has not been found for this ID " + id);
         }
-        /*return optionalModel.map(obj -> optionalModel).orElseThrow(
-                () -> new ModelNotFoundException("Model has not been found for this ID " + id));*/
     }
 
     @Override

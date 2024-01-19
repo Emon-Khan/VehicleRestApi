@@ -54,9 +54,6 @@ public class manufacturerController {
     public ResponseEntity<Manufacturer> updateManufacturer(@PathVariable int id, @Valid @RequestBody Manufacturer manufacturer, BindingResult result) throws Exception {
         if (result.hasErrors()) {
             List<ObjectError> errors = result.getAllErrors();
-            /*for(ObjectError var:errors){
-                System.out.println("*************Errors********* "+var);
-            }*/
             throw new MissingFieldException(errors.get(0).getDefaultMessage());
         }
         Manufacturer updatedManufacturer = manufacturerService.updateManufacturer(id, manufacturer);

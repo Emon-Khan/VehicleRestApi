@@ -32,10 +32,6 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
     public List<ClientVehicleDetail> getAllClientVehicleDetails() {
         VehicleDetailsDTO vehicleDetailsDTO = restTemplate.getForObject(
                 "http://VEHICLE-DETAILS-API/api/v1/vehicle-details", VehicleDetailsDTO.class);
-        /*List<ClientVehicleDetail> clientVehicleDetailsList = new ArrayList<>();
-        for (VehicleDetails vehicleDetails : vehicleDetailsDTO.getVehicleDetailsList()) {
-            clientVehicleDetailsList.add(mapClientVehicleDetailFromVehicleDetail(vehicleDetails));
-        }*/
         List<ClientVehicleDetail> clientVehicleDetailsList = vehicleDetailsDTO.getVehicleDetailsList().stream()
                 .map(vehicle -> {
                     try {
@@ -68,7 +64,6 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         params.put("price", price);
         String url = "http://VEHICLE-DETAILS-API/api/v1/vehicle-details/search?modelYear={modelYear}&brand={brand}&model={model}&trim={trim}&price={price}";
         VehicleDetailsDTO filteredList = restTemplate.getForObject(url, VehicleDetailsDTO.class, params);
-        //assert filteredList != null;
         return filteredList.getVehicleDetailsList().stream().map(vehicleDetails -> {
             try {
                 return mapClientVehicleDetailFromVehicleDetail(vehicleDetails);
@@ -100,31 +95,16 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         double monthlyPrice = monthlyPriceCalculation(vehicleDetails);
         double totalAmmountToBePaid = monthlyPrice * 10 * 12;
-        /*double monthlyPrice = vehicleDetails.getVehiclePrice() / (5 * 12) +
-                vehicleDetails.getVehiclePrice() * vehicleDetails.getInterestRate() / (100 * 12);*/
         //$577.31/monthly est.
         clientVehicleDetail.setEstimatedMonthlyPrice("$" + decimalFormat.format(monthlyPrice) + "/monthly est.");
         //Calculate amount below or above market price
         //Calculate current market price
         //Market Price (New Vehicle) - (Current year -model year)*market price * 0.5/25-current miles*market price*75/500000
-       /*VehicleMarketPrice dbMarketPriceBasedOnBrandAndModelAndTrimAndYear = vehicleMarketPriceService
-                .getVehicleMarketPriceByBrandAndModelAndTrimAndYear(vehicleDetails.getBrandName(), vehicleDetails.getModelName(), vehicleDetails.getTrimType(), vehicleDetails.getModelYear());
-        if (dbMarketPriceBasedOnBrandAndModelAndTrimAndYear == null) {
-            throw new VehicleMarketPriceNotFoundException("Vehicle Market Price not found for this BrandName, ModelName, TrimType & Year" +
-                    vehicleDetails.getBrandName() + " & " + vehicleDetails.getModelName()+ " & "+vehicleDetails.getTrimType()+ " & "+vehicleDetails.getModelYear());
-        }*/
         VehicleMarketPrice dbMarketPriceBasedOnBrandAndModelAndTrimAndYear = vehicleMarketPriceDAO.findByBrandNameAndModelNameAndTrimTypeAndModelYear(vehicleDetails.getBrandName(), vehicleDetails.getModelName(), vehicleDetails.getTrimType(), vehicleDetails.getModelYear()).orElseThrow(
                 () ->  new VehicleMarketPriceNotFoundException("Vehicle Market Price not found for this BrandName, ModelName, TrimType & Year" +
                 vehicleDetails.getBrandName() + " & " + vehicleDetails.getModelName() + " & " + vehicleDetails.getTrimType() + " & " + vehicleDetails.getModelYear()
         ));
-        /*double currentVehicleMarketPrice = dbMarketPriceBasedOnBrandAndModelAndTrimAndYear.getPrice()
-                - (LocalDate.now().getYear() - vehicleDetails.getModelYear())
-                * (dbMarketPriceBasedOnBrandAndModelAndTrimAndYear.getPrice() * 0.5 / 25) - (vehicleDetails.getMilesOnVehicle()
-                * dbMarketPriceBasedOnBrandAndModelAndTrimAndYear.getPrice() * 0.75 / 500000);*/
         double currentVehicleMarketPrice = dbMarketPriceBasedOnBrandAndModelAndTrimAndYear.getPrice();
-        /*if (currentVehicleMarketPrice < 0) {
-            currentVehicleMarketPrice = 0;
-        }*/
         double marketPriceComparison = currentVehicleMarketPrice - totalAmmountToBePaid;
         if (marketPriceComparison > 0) {
             clientVehicleDetail.setAmountBelowMarketPrice("$" + marketPriceComparison + " below market price.");
@@ -148,7 +128,7 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
         double interestRateMonthly = vehicleDetails.getInterestRate() / (12 * 100);
         double numberOfMonth = 10 * 12;
         double calculation1 = Math.pow((1.0 + interestRateMonthly), numberOfMonth);
-        double monthlyPrice = (vehicleDetails.getVehiclePrice() * interestRateMonthly * calculation1) / (calculation1 - 1);
+        double monthlyPrice = (vehicleDetails.getVehiclePrice() * interestRateMonthly * calculation1) / (calculation1 - 1); //compound interest rule
         return monthlyPrice;
     }
 
