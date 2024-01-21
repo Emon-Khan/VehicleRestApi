@@ -240,6 +240,25 @@ To find out the estimated monthly price we have use Compount interest rule.
 
 ![image](https://github.com/Emon-Khan/VehicleRestApi/assets/42010220/b2b1e974-94b7-478a-992a-fca4aae7349d)
 
+### Testing
+
+For doing the testing we can't store the value inside the databases.Then it will be kind of look like manual process of doing the testing.
+Instead, we aim to automate testing procedures for efficiency.
+
+For doing the test for controller layer we need to mock the data.That's why we are using Mockito framework.ObjectMapper also has been used here to make a relationship between 2 services.We can fetch value from another service by using the ObjectMapper.And for testing we have used jUnit5.
+
+![image](https://github.com/Emon-Khan/VehicleRestApi/assets/42010220/da9dd69f-064c-4b6e-bb47-5602e6f3f385)
+
+![image](https://github.com/Emon-Khan/VehicleRestApi/assets/42010220/7befefbb-c826-4816-a25b-8f70a391efcc)
+
+Both AAA (Arrange-Act-Assert) and GWT (Given-When-Then) are patterns in Behavioral-Driven Development, serving the same purpose of structuring test cases.In this test cases i have followed the Behavioral Driven Development.
+
+Specially when it's come to writing the unit test cases for the dao/repository layer then we need to store data inside the database temporarily.So, that's why here we can use h2 embedded database.But testContainers spins up actual database instances in Docker containers, mirroring production environments more accurately than H2's in-memory database. This approach mitigates inconsistency between testing and production, enhancing the reliability of unit tests for database-related code.
+
+![image](https://github.com/Emon-Khan/VehicleRestApi/assets/42010220/b7fe4812-41a0-4663-b024-45f361537013)
+
+![image](https://github.com/Emon-Khan/VehicleRestApi/assets/42010220/8fd5fa79-7867-48d9-9e71-0b0d4f6de8fc)
+
 
 
 
