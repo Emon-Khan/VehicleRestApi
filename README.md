@@ -259,6 +259,11 @@ Specially when it's come to writing the unit test cases for the dao/repository l
 
 ![image](https://github.com/Emon-Khan/VehicleRestApi/assets/42010220/8fd5fa79-7867-48d9-9e71-0b0d4f6de8fc)
 
+## Related
+
+I have use an agile project management tool (Jira) for tracking the project.And named the branches of my project based on the task name, along with a generated task number.
+![image](https://github.com/Emon-Khan/VehicleRestApi/assets/42010220/33b15827-adee-447a-9f61-0455681c67ee)
+![image](https://github.com/Emon-Khan/VehicleRestApi/assets/42010220/714c93bf-419b-444b-a0d9-ba48ac4c6f3d)
 
 
 
