@@ -32,15 +32,15 @@ public class VehicleDetailServiceImpl implements VehicleDetailService {
     public List<ClientVehicleDetail> getAllClientVehicleDetails() {
         VehicleDetailsDTO vehicleDetailsDTO = restTemplate.getForObject(
                 "http://VEHICLE-DETAILS-API/api/v1/vehicle-details", VehicleDetailsDTO.class);
-        List<ClientVehicleDetail> clientVehicleDetailsList = vehicleDetailsDTO.getVehicleDetailsList().stream()
-                .map(vehicle -> {
+        //List<ClientVehicleDetail> clientVehicleDetailsList = vehicleDetailsDTO.getVehicleDetailsList().stream()
+        return vehicleDetailsDTO.getVehicleDetailsList().stream().map(vehicleDetails -> {
                     try {
-                        return mapClientVehicleDetailFromVehicleDetail(vehicle);
+                        return mapClientVehicleDetailFromVehicleDetail(vehicleDetails);
                     } catch (VehicleMarketPriceNotFoundException e) {
                         throw new RuntimeException(e);
                     }
                 }).collect(Collectors.toList());
-        return clientVehicleDetailsList;
+        //return clientVehicleDetailsList;
     }
 
     @Override
